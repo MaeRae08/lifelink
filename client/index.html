@@ -1,0 +1,137 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LifeLink GH - Blood Drive Locator</title>
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+</head>
+
+<body>
+  <header>
+    <div class="container">
+      <div class="logo">
+        <h1>LifeLink GH 🩸</h1>
+      </div>
+      <nav>
+        <ul>
+          <li><a href="index.html">Home</a></li>
+          <li><a href="#drives-grid">Find a Drive</a></li>
+          <li><a href="login.html" id="auth-button">Organizer Login</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+    <section class="hero">
+      <div class="container">
+        <h2>Find a Blood Drive. Save a Life.</h2>
+        <p>Your donation can make a world of difference. Find an upcoming blood drive near you.</p>
+      </div>
+    </section>
+
+    <section class="how-it-works">
+      <div class="container">
+        <h3>How It Works</h3>
+        <div class="steps-container">
+          <div class="step-card">
+            <span>1</span>
+            <h4>Find a Drive</h4>
+            <p>Use our interactive map and list to find a convenient blood drive location and date.</p>
+          </div>
+          <div class="step-card">
+            <span>2</span>
+            <h4>Donate Blood</h4>
+            <p>Visit the location on the specified date to make your life-saving donation.</p>
+          </div>
+          <div class="step-card">
+            <span>3</span>
+            <h4>Save Lives</h4>
+            <p>Your single donation can help save up to three lives in communities across Ghana.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="map-section">
+      <div class="container">
+        <h3>Blood Drive Locations</h3>
+        <div id="map"></div>
+      </div>
+    </section>
+
+    <section class="drives-section" id="drives-grid-section">
+      <div class="container">
+        <h3>Upcoming Drives</h3>
+        <div id="drives-grid">
+        </div>
+      </div>
+    </section>
+
+    <section id="create-drive-section" class="form-section" style="display: none;">
+      <div class="container">
+        <h3>Post a New Blood Drive</h3>
+        <form id="create-drive-form" class="auth-box">
+          <div class="input-group">
+            <label for="organizer-name">Organizer Name</label>
+            <input type="text" id="organizer-name" required />
+          </div>
+          <div class="input-group">
+            <label for="drive-date">Date of Drive</label>
+            <input type="date" id="drive-date" required />
+          </div>
+          <div class="input-group">
+            <label for="location-name">Location (e.g., Accra Mall)</label>
+            <input type="text" id="location-name" required />
+          </div>
+          <button type="submit" class="btn-primary">Create Drive</button>
+        </form>
+      </div>
+    </section>
+
+    <section class="cta-section" id="cta-section">
+      <div class="container">
+        <h2>Are You an Organizer?</h2>
+        <p>Help us build a network of life-savers. Register your organization and post your blood drives for free.</p>
+        <a href="signup.html" class="btn-primary cta-button">Get Started</a>
+      </div>
+    </section>
+
+  </main>
+
+  <div id="edit-modal" class="modal" style="display: none;">
+    <div class="modal-content">
+      <span class="close-button">&times;</span>
+      <h3>Edit Blood Drive</h3>
+      <form id="edit-drive-form">
+        <input type="hidden" id="edit-drive-id">
+        <div class="input-group">
+          <label for="edit-organizer-name">Organizer Name</label>
+          <input type="text" id="edit-organizer-name" required />
+        </div>
+        <div class="input-group">
+          <label for="edit-drive-date">Date of Drive</label>
+          <input type="date" id="edit-drive-date" required />
+        </div>
+        <div class="input-group">
+          <label for="edit-location-name">Location</label>
+          <input type="text" id="edit-location-name" required />
+        </div>
+        <button type="submit" class="btn-primary">Save Changes</button>
+      </form>
+    </div>
+  </div>
+
+  <footer>
+    <div class="container">
+      <p>&copy; 2025 LifeLink GH - Diploma Project</p>
+    </div>
+  </footer>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="script.js"></script>
+</body>
+
+</html>
