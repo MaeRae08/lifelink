@@ -1,0 +1,10 @@
+{
+  "name": "lifelink-gh-root",
+  "version": "1.0.0",
+  "scripts": {
+    "heroku-postbuild": "npm install --prefix server"
+  },
+  "engines": {
+    "node": "18.x"
+  }
+}
