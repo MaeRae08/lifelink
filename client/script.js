@@ -3,6 +3,7 @@
 // This global variable will hold the logged-in user's data.
 let loggedInUser = null;
 let map; // Global variable to hold the map instance
+const liveApiUrl = 'https://lifelink-gh-3edbd3f962c8.herokuapp.com'; // Your live backend URL
 
 /**
  * Initializes the Leaflet map and sets the initial view.
@@ -24,7 +25,7 @@ function initMap() {
  * It also conditionally adds Edit/Delete buttons for the drive owner.
  */
 async function fetchAndDisplayDrives() {
-    const apiUrl = 'http://localhost:3001/api/drives';
+    const apiUrl = `${liveApiUrl}/api/drives`;
     const drivesGrid = document.getElementById('drives-grid');
     try {
         const response = await fetch(apiUrl);
@@ -38,12 +39,12 @@ async function fetchAndDisplayDrives() {
         }
 
         // Hardcoded coordinates for the map markers.
-        // For a real-world app, you would use a geocoding service.
         const locations = {
             'Tema': [5.6667, 0.0167],
             'Accra Central': [5.5582, -0.2037],
             'Airport Residential Area': [5.6085, -0.1770],
             'Legon Campus': [5.6514, -0.1843],
+            // Add more locations here as needed
         };
 
         for (const drive of drives) {
@@ -68,7 +69,7 @@ async function fetchAndDisplayDrives() {
             const coords = locations[drive.location_name];
             if (coords) {
                 const marker = L.marker(coords).addTo(map);
-                marker.bindPopup(`<b>${drive.organizer_name}</b><br>${drive.location_name}<br>Date: ${formattedDate}`).openPopup();
+                marker.bindPopup(`<b>${drive.organizer_name}</b><br>${drive.location_name}<br>Date: ${formattedDate}`);
             }
         }
         addDeleteEventListeners();
@@ -82,17 +83,15 @@ async function fetchAndDisplayDrives() {
 /**
  * Checks for a token in localStorage, fetches the user's data, and updates the UI accordingly.
  */
-// Replace the existing handleAuthState function in script.js with this one
-
 async function handleAuthState() {
     const token = localStorage.getItem('token');
     const authButton = document.getElementById('auth-button');
     const createDriveSection = document.getElementById('create-drive-section');
-    const ctaSection = document.getElementById('cta-section'); // Get the CTA section
+    const ctaSection = document.getElementById('cta-section');
 
     if (token) {
         try {
-            const response = await fetch('http://localhost:3001/api/auth/me', {
+            const response = await fetch(`${liveApiUrl}/api/auth/me`, {
                 headers: { 'Authorization': `Bearer ${token}` }
             });
             if (response.ok) {
@@ -118,16 +117,17 @@ async function handleAuthState() {
             window.location.reload();
         });
         if (createDriveSection) createDriveSection.style.display = 'block';
-        if (ctaSection) ctaSection.style.display = 'none'; // Hide CTA section
+        if (ctaSection) ctaSection.style.display = 'none';
     } else {
         // User is logged out
         authButton.textContent = 'Organizer Login';
         authButton.href = 'login.html';
         if (createDriveSection) createDriveSection.style.display = 'none';
-        if (ctaSection) ctaSection.style.display = 'block'; // Show CTA section
+        if (ctaSection) ctaSection.style.display = 'block';
     }
     fetchAndDisplayDrives();
 }
+
 /**
  * Adds the event listener for the "Create Drive" form.
  */
@@ -145,7 +145,7 @@ function handleCreateDriveForm() {
             location_name: document.getElementById('location-name').value,
         };
         try {
-            const response = await fetch('http://localhost:3001/api/drives', {
+            const response = await fetch(`${liveApiUrl}/api/drives`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',
@@ -177,7 +177,7 @@ function addDeleteEventListeners() {
             const token = localStorage.getItem('token');
             if (!confirm('Are you sure you want to delete this drive?')) return;
             try {
-                const response = await fetch(`http://localhost:3001/api/drives/${driveId}`, {
+                const response = await fetch(`${liveApiUrl}/api/drives/${driveId}`, {
                     method: 'DELETE',
                     headers: { 'Authorization': `Bearer ${token}` }
                 });
@@ -235,7 +235,7 @@ function addEditEventListeners() {
             };
 
             try {
-                const response = await fetch(`http://localhost:3001/api/drives/${driveId}`, {
+                const response = await fetch(`${liveApiUrl}/api/drives/${driveId}`, {
                     method: 'PUT',
                     headers: {
                         'Content-Type': 'application/json',
@@ -256,7 +256,6 @@ function addEditEventListeners() {
         });
     }
 }
-
 
 /**
  * Main logic execution block that runs when the page is loaded.
@@ -279,7 +278,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = document.getElementById('login-email').value;
             const password = document.getElementById('login-password').value;
             try {
-                const response = await fetch('http://localhost:3001/api/auth/login', {
+                const response = await fetch(`${liveApiUrl}/api/auth/login`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password }),
@@ -307,7 +306,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const email = document.getElementById('signup-email').value;
             const password = document.getElementById('signup-password').value;
             try {
-                const response = await fetch('http://localhost:3001/api/auth/signup', {
+                const response = await fetch(`${liveApiUrl}/api/auth/signup`, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
                     body: JSON.stringify({ email, password }),
