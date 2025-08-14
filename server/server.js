@@ -5,6 +5,7 @@ require('dotenv').config();
 const db = require('./db');
 const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
+// axios is no longer needed, so it has been removed.
 
 // --- 2. CREATE APP ---
 const app = express();
@@ -16,20 +17,44 @@ app.use(express.json());
 
 // --- 4. API ROUTES ---
 
-// GET /api/drives - Fetches all blood drives
-app.get('/api/drives', async (req, res) => {
+// NEW: GET /api/locations - Fetches all locations for the dropdown
+app.get('/api/locations', async (req, res) => {
     try {
-        const [results] = await db.query('SELECT * FROM drives ORDER BY drive_date ASC');
-        res.status(200).json(results);
+        const [locations] = await db.query('SELECT * FROM locations ORDER BY name ASC');
+        res.status(200).json(locations);
     } catch (err) {
         console.error('Database query error:', err);
-        res.status(500).json({ error: 'Failed to retrieve drives' });
+        res.status(500).json({ message: 'Failed to retrieve locations' });
     }
 });
 
-// --- AUTHENTICATION ROUTES ---
+// UPDATED: GET /api/drives - Joins with locations table
+app.get('/api/drives', async (req, res) => {
+    try {
+        // This query now joins the two tables to get all necessary info at once.
+        const query = `
+            SELECT 
+                d.id, 
+                d.user_id, 
+                d.organizer_name, 
+                d.drive_date, 
+                l.name AS location_name, 
+                l.latitude, 
+                l.longitude
+            FROM drives d
+            JOIN locations l ON d.location_id = l.id
+            ORDER BY d.drive_date ASC
+        `;
+        const [results] = await db.query(query);
+        res.status(200).json(results);
+    } catch (err) {
+        console.error('Database query error:', err);
+        res.status(500).json({ message: 'Failed to retrieve drives' });
+    }
+});
 
-// POST /api/auth/signup - Registers a new user
+
+// --- AUTHENTICATION ROUTES (No changes here) ---
 app.post('/api/auth/signup', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -50,7 +75,6 @@ app.post('/api/auth/signup', async (req, res) => {
     }
 });
 
-// POST /api/auth/login - Logs in a user
 app.post('/api/auth/login', async (req, res) => {
     try {
         const { email, password } = req.body;
@@ -73,102 +97,90 @@ app.post('/api/auth/login', async (req, res) => {
     }
 });
 
-// GET /api/auth/me - Gets the current logged-in user's data (NEW)
 app.get('/api/auth/me', authenticateToken, (req, res) => {
-    // The authenticateToken middleware already found the user and attached it to req.user
     res.status(200).json(req.user);
 });
 
 
-// --- MIDDLEWARE to verify JWT (our "Security Guard") ---
+// --- MIDDLEWARE to verify JWT (No changes here) ---
 function authenticateToken(req, res, next) {
     const authHeader = req.headers['authorization'];
-    const token = authHeader && authHeader.split(' ')[1]; // Format: "Bearer TOKEN"
-
-    if (token == null) {
-        return res.sendStatus(401); // Unauthorized - no token
-    }
-
+    const token = authHeader && authHeader.split(' ')[1];
+    if (token == null) return res.sendStatus(401);
     jwt.verify(token, process.env.JWT_SECRET, (err, payload) => {
-        if (err) {
-            return res.sendStatus(403); // Forbidden - token is invalid
-        }
-        req.user = payload.user; // Attach user info to the request
-        next(); // Proceed to the route handler
+        if (err) return res.sendStatus(403);
+        req.user = payload.user;
+        next();
     });
 }
 
 
 // --- PROTECTED ROUTES ---
 
-// POST /api/drives - Creates a new blood drive
+// UPDATED: POST /api/drives - Now uses location_id
 app.post('/api/drives', authenticateToken, async (req, res) => {
     try {
-        const { organizer_name, drive_date, location_name } = req.body;
+        // Now expecting location_id instead of location_name
+        const { organizer_name, drive_date, location_id } = req.body;
         const userId = req.user.id;
 
-        if (!organizer_name || !drive_date || !location_name) {
+        if (!organizer_name || !drive_date || !location_id) {
             return res.status(400).json({ message: 'All fields are required.' });
         }
-        const query = 'INSERT INTO drives (user_id, organizer_name, drive_date, location_name) VALUES (?, ?, ?, ?)';
-        await db.query(query, [userId, organizer_name, drive_date, location_name]);
+        
+        // The query is now much simpler and more reliable.
+        const query = 'INSERT INTO drives (user_id, organizer_name, drive_date, location_id) VALUES (?, ?, ?, ?)';
+        await db.query(query, [userId, organizer_name, drive_date, location_id]);
+        
         res.status(201).json({ message: 'Drive created successfully!' });
+
     } catch (error) {
-        console.error('Create Drive Error:', error);
+        console.error('Create Drive Error:', error.message);
         res.status(500).json({ message: 'An error occurred while creating the drive.' });
     }
 });
 
-// DELETE /api/drives/:id - Deletes a drive (NEW)
+// DELETE /api/drives/:id (No changes here)
 app.delete('/api/drives/:id', authenticateToken, async (req, res) => {
     try {
         const driveId = req.params.id;
-        const userId = req.user.id; // From the JWT payload
-
-        // This query ensures users can only delete their OWN drives
+        const userId = req.user.id;
         const query = 'DELETE FROM drives WHERE id = ? AND user_id = ?';
         const [result] = await db.query(query, [driveId, userId]);
-
         if (result.affectedRows === 0) {
-            // This means the drive was not found OR the user is not the owner
             return res.status(404).json({ message: 'Drive not found or you do not have permission to delete it.' });
         }
-
         res.status(200).json({ message: 'Drive deleted successfully.' });
-
     } catch (error) {
         console.error('Delete Drive Error:', error);
         res.status(500).json({ message: 'An error occurred while deleting the drive.' });
     }
 });
 
-// PUT /api/drives/:id - Updates a drive (Protected)
+// UPDATED: PUT /api/drives/:id - Now uses location_id
 app.put('/api/drives/:id', authenticateToken, async (req, res) => {
     try {
         const driveId = req.params.id;
         const userId = req.user.id;
-        const { organizer_name, drive_date, location_name } = req.body;
+        const { organizer_name, drive_date, location_id } = req.body;
 
-        // Validation
-        if (!organizer_name || !drive_date || !location_name) {
+        if (!organizer_name || !drive_date || !location_id) {
             return res.status(400).json({ message: 'All fields are required.' });
         }
 
-        // Query to update the drive, ensuring the user is the owner
-        const query = 'UPDATE drives SET organizer_name = ?, drive_date = ?, location_name = ? WHERE id = ? AND user_id = ?';
-        const [result] = await db.query(query, [organizer_name, drive_date, location_name, driveId, userId]);
+        const query = 'UPDATE drives SET organizer_name = ?, drive_date = ?, location_id = ? WHERE id = ? AND user_id = ?';
+        const [result] = await db.query(query, [organizer_name, drive_date, location_id, driveId, userId]);
 
         if (result.affectedRows === 0) {
             return res.status(404).json({ message: 'Drive not found or you do not have permission to edit it.' });
         }
-
         res.status(200).json({ message: 'Drive updated successfully.' });
-
     } catch (error) {
         console.error('Update Drive Error:', error);
         res.status(500).json({ message: 'An error occurred while updating the drive.' });
     }
 });
+
 
 // --- 5. START SERVER ---
 app.listen(PORT, () => {

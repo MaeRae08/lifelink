@@ -13,8 +13,8 @@ const pool = mysql.createPool({
   queueLimit: 0,
   // Add this SSL configuration for Aiven
   ssl: {
-    rejectUnauthorized: false
-  }
+    rejectUnauthorized: false,
+  },
 });
 
 // Test the connection

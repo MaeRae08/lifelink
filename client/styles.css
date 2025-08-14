@@ -16,6 +16,7 @@ body {
     Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
   line-height: 1.6;
   background-color: #f8f9fa;
+  /* The main, very light grey background */
   color: #343a40;
   display: flex;
   flex-direction: column;
@@ -39,7 +40,6 @@ header {
   border-bottom: 1px solid #e9ecef;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
   position: relative;
-  /* Needed for mobile menu positioning */
 }
 
 header .container {
@@ -113,7 +113,9 @@ header nav a:hover,
 /* --- Drives Section --- */
 .drives-section {
   padding: 4rem 0;
-  background-color: #ffffff;
+  /* UPDATED: Using a subtle, warm off-white */
+  background-color: #fffafa;
+  /* This is a "Snow" or "Blush" color */
 }
 
 .drives-section h3 {
@@ -138,7 +140,6 @@ header nav a:hover,
   transition:
     transform 0.3s ease,
     box-shadow 0.3s ease;
-  cursor: pointer;
 }
 
 .card:hover {
@@ -252,8 +253,9 @@ header nav a:hover,
 
 /* --- Create Drive Form Section --- */
 .form-section {
-  padding: 3rem 0;
-  background-color: #f8f9fa;
+  padding: 4rem 0;
+  /* UPDATED: Using a subtle, warm off-white */
+  background-color: #fffafa;
 }
 
 .form-section h3 {
@@ -347,7 +349,9 @@ header nav a:hover,
 #map {
   height: 500px;
   width: 100%;
-  margin-bottom: 2rem;
+  border-radius: 12px;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+  border: 1px solid #e9ecef;
 }
 
 /* --- How It Works Section --- */
@@ -434,10 +438,11 @@ header nav a:hover,
   color: #d90429;
 }
 
-/* Adjust Map Section Margin */
+/* Map Section */
 .map-section {
   padding: 4rem 0;
-  background-color: #f8f9fa;
+  /* UPDATED: Using a subtle, warm off-white */
+  background-color: #fffafa;
 }
 
 .map-section h3 {
@@ -455,12 +460,9 @@ footer {
   color: #f8f9fa;
 }
 
-/* --- RESPONSIVE NAVIGATION STYLES (NEW) --- */
-
-/* Hamburger Menu Button */
+/* --- RESPONSIVE NAVIGATION STYLES --- */
 .menu-toggle {
   display: none;
-  /* Hidden by default on desktop */
   flex-direction: column;
   justify-content: space-around;
   width: 30px;
@@ -480,11 +482,9 @@ footer {
   transition: all 0.3s ease-in-out;
 }
 
-/* Media Query for mobile devices */
 @media (max-width: 768px) {
   header nav {
     display: none;
-    /* Hide the nav by default on mobile */
     position: absolute;
     top: 100%;
     left: 0;
@@ -495,7 +495,6 @@ footer {
 
   header nav.is-open {
     display: block;
-    /* Show the nav when it has the .is-open class */
   }
 
   header nav ul {
@@ -522,6 +521,29 @@ footer {
 
   .menu-toggle {
     display: flex;
-    /* Show the hamburger button on mobile */
   }
+}
+
+/* --- Professional Dropdown Styles --- */
+.form-select {
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  width: 100%;
+  padding: 12px 15px;
+  border-radius: 8px;
+  border: 1px solid #ced4da;
+  font-size: 16px;
+  background-color: #ffffff;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%23343a40' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 15px center;
+  background-size: 16px 12px;
+}
+
+.form-select:focus {
+  outline: none;
+  border-color: #d90429;
+  box-shadow: 0 0 0 3px rgba(217, 4, 41, 0.15);
 }
