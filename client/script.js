@@ -21,6 +21,20 @@ function initMap() {
 }
 
 /**
+ * Toggles the mobile navigation menu.
+ */
+function handleMobileMenu() {
+    const menuToggle = document.getElementById('menu-toggle');
+    const mainNav = document.getElementById('main-nav');
+
+    if (menuToggle && mainNav) {
+        menuToggle.addEventListener('click', () => {
+            mainNav.classList.toggle('is-open');
+        });
+    }
+}
+
+/**
  * Fetches all drives from the API and renders them on the page.
  * It also conditionally adds Edit/Delete buttons for the drive owner.
  */
@@ -268,6 +282,7 @@ document.addEventListener('DOMContentLoaded', () => {
         initMap(); // Initialize the map before fetching drives
         handleAuthState();
         handleCreateDriveForm();
+        handleMobileMenu(); // Activate the mobile menu handler
     }
 
     // --- Login Page Logic ---

@@ -38,6 +38,8 @@ header {
   padding: 1rem 0;
   border-bottom: 1px solid #e9ecef;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+  position: relative;
+  /* Needed for mobile menu positioning */
 }
 
 header .container {
@@ -247,7 +249,6 @@ header nav a:hover,
 .auth-switch a:hover {
   text-decoration: underline;
 }
-/* Add this to the end of your styles.css file */
 
 /* --- Create Drive Form Section --- */
 .form-section {
@@ -266,7 +267,7 @@ header nav a:hover,
   max-width: 700px;
   margin: auto;
 }
-/* Add to the end of client/styles.css */
+
 .card-controls {
   margin-top: 15px;
   text-align: right;
@@ -286,8 +287,6 @@ header nav a:hover,
 .btn-delete:hover {
   background-color: #5a6268;
 }
-
-/* Add this to the end of your styles.css file */
 
 .btn-edit {
   background-color: #007bff;
@@ -344,16 +343,12 @@ header nav a:hover,
   text-decoration: none;
   cursor: pointer;
 }
+
 #map {
   height: 500px;
-  /* Gives the map a vertical dimension */
   width: 100%;
-  /* Makes the map fill the width of its container */
   margin-bottom: 2rem;
-  /* Adds some space below the map */
 }
-
-/* Add this to the end of your styles.css */
 
 /* --- How It Works Section --- */
 .how-it-works {
@@ -451,10 +446,82 @@ header nav a:hover,
   margin-bottom: 2.5rem;
   color: #343a40;
 }
+
 /* --- Footer --- */
 footer {
   text-align: center;
   padding: 2rem;
   background: #343a40;
   color: #f8f9fa;
+}
+
+/* --- RESPONSIVE NAVIGATION STYLES (NEW) --- */
+
+/* Hamburger Menu Button */
+.menu-toggle {
+  display: none;
+  /* Hidden by default on desktop */
+  flex-direction: column;
+  justify-content: space-around;
+  width: 30px;
+  height: 25px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+  z-index: 10;
+}
+
+.menu-toggle .bar {
+  width: 100%;
+  height: 3px;
+  background-color: #343a40;
+  border-radius: 10px;
+  transition: all 0.3s ease-in-out;
+}
+
+/* Media Query for mobile devices */
+@media (max-width: 768px) {
+  header nav {
+    display: none;
+    /* Hide the nav by default on mobile */
+    position: absolute;
+    top: 100%;
+    left: 0;
+    width: 100%;
+    background-color: #ffffff;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  }
+
+  header nav.is-open {
+    display: block;
+    /* Show the nav when it has the .is-open class */
+  }
+
+  header nav ul {
+    flex-direction: column;
+    width: 100%;
+    padding: 1rem 0;
+  }
+
+  header nav li {
+    width: 100%;
+    text-align: center;
+  }
+
+  header nav a {
+    display: block;
+    padding: 1rem;
+    width: 100%;
+  }
+
+  #auth-button {
+    width: calc(100% - 40px);
+    margin: 10px 20px;
+  }
+
+  .menu-toggle {
+    display: flex;
+    /* Show the hamburger button on mobile */
+  }
 }
